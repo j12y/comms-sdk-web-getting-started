@@ -40,6 +40,13 @@
 
                 <button type="button" class="btn btn-dark" id="btn-join">Join</button>
                 <button type="button" class="btn btn-dark" id="btn-leave">Leave</button>
+
+	    <div class="container px-4 py-4 mt-3">
+		<div class="form-check form-switch">
+		    <input class="form-check-input" type="checkbox" role="switch" id="btn-blur">
+		    <label class="form-check-label" for="btn-blur">Blur</label>
+		</div>
+	    </div>
             </div>
             
             <div class="col-4 shadow p-3 mb-5 bg-body rounded">
@@ -51,6 +58,7 @@
 
                 <button type="button" class="btn btn-dark" id="btn-invite"><i class="bi bi-clipboard2-plus-fill"></i> Invite</button>
             </div>
+
         </div>
     </div>
 
@@ -188,7 +196,19 @@
                 await VoxeetSDK.session.close();
                 console.log("Session closed.");
             });
-        }
+        } 
+
+	// When toggled, enable and disable background blurring
+	document.getElementById("btn-blur").onclick = async (event) => {
+		if (VoxeetSDK.session.isOpen() && VoxeetSDK.conference.current != undefined) {
+			if (event.target.checked) {
+				VoxeetSDK.video.local.setProcessor({type: "bokeh"});
+			} else {
+				VoxeetSDK.video.local.setProcessor({});
+			}
+		}
+	}
+
 
         /**
          * When a new participant camera media stream is detected, we determine which

@@ -40,6 +40,13 @@
 
                 <button type="button" class="btn btn-dark" id="btn-join">Join</button>
                 <button type="button" class="btn btn-dark" id="btn-leave">Leave</button>
+
+                <div class="container px-4 py-4 mt-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="btn-share">
+                        <label class="form-check-label" for="btn-share">Share Screen</label>
+                    </div>
+                </div>
             </div>
             
             <div class="col-4 shadow p-3 mb-5 bg-body rounded">
@@ -51,6 +58,8 @@
 
                 <button type="button" class="btn btn-dark" id="btn-invite"><i class="bi bi-clipboard2-plus-fill"></i> Invite</button>
             </div>
+        </div>
+        <div id="screenshare-view" class="row justify-content-around mt-3">
         </div>
     </div>
 
@@ -161,6 +170,8 @@
 
                 if (stream.type === "Camera") {
                     shareVideo(participant, stream);
+                } else if (stream.type === "ScreenShare") {
+                    shareScreen(participant, stream);
                 }
             });
 
@@ -177,6 +188,17 @@
             // Custom behavior for when the app stops receiving a media stream for remote participants
             VoxeetSDK.conference.on("streamRemoved", (participant, stream) => {
                 console.log(`Stream Removed for ${participant.info.name}`);
+
+                if (stream.type === "ScreenShare") {
+                    const screenShareNode = document.getElementById(`screenshare-${participant.id}`);
+                    if (screenShareNode) {
+                        screenShareNode.parentNode.removeChild(screenShareNode);
+                    }
+
+                    // Only remove the screenshare
+                    return;
+                }
+
                 const videoNode = document.getElementById(`video-${participant.id}`);
                 if (videoNode) {
                     videoNode.parentNode.removeChild(videoNode);
@@ -188,6 +210,34 @@
                 await VoxeetSDK.session.close();
                 console.log("Session closed.");
             });
+        }
+
+        /**
+         * When the screen share control is toggled, start and stop the
+         * screen share when supported by the web browser.
+         */
+        document.getElementById("btn-share").onclick = async (event) => {
+            if (VoxeetSDK.conference.current) {
+                if (event.target.checked) {
+                    // Share Screen
+                    try {
+                        await VoxeetSDK.conference.startScreenShare({'audio': true});
+                        shareMessage(`Sharing screen.`);
+                    } catch (err) {
+                        shareMessage(`Error when sharing screen: ${err}`);
+                    }
+                } else {
+                    // Turn off Share Screen
+                    try {
+                        await VoxeetSDK.conference.stopScreenShare();
+                        shareMessage(`Stopped sharing screen.`);
+                    } catch (err) {
+                        shareMessage(`Error when stopping screen share: ${err}`);
+                    }
+                }
+            } else {
+                // provide user with feedback and/or maintain state of toggle if not in a conference
+            }
         }
 
         /**
@@ -227,6 +277,30 @@
             navigator.attachMediaStream(videoNode, stream);
             shareMessage(`Step 4: Video of participant '${participant.info.name}' started.`);
             console.groupEnd();
+        }
+
+        /**
+         * When a new participant screen share is detected, we determine which part
+         * of the user interface to update to display that incoming stream.
+         */
+        const shareScreen = (participant, stream) => {
+            let screenShareNode = document.getElementById(`screenshare-${participant.id}`);
+            if (screenShareNode) {
+                shareMessage("Screen is already being shared in this session.");
+            } else {
+                // Create a video node for the screen share stream
+                screenShareNode = document.createElement("video");
+                screenShareNode.id = `screenshare-${participant.id}`;
+                screenShareNode.autoplay = "autoplay";
+                navigator.attachMediaStream(screenShareNode, stream);
+
+                // Add the video node to the user interface
+                const container = document.getElementById("screenshare-view");
+                container.appendChild(screenShareNode);
+
+                // Make sure the participant is not muted to share audio
+                VoxeetSDK.conference.mute(participant, false);
+            }
         }
 
         /**

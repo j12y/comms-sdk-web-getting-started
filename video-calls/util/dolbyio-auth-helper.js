@@ -1,76 +1,40 @@
 const dolbyio = {};
-
-/**
- * Open a modal to allow user to paste in a token. This helper
- * only works with the starter project that has the elements
- * defined.
- *
- * @param {*}
- * @returns token (string)
- */
-dolbyio.tokenPrompt = () => {
-	document.getElementById('btn-token').onclick = async () => {
-		modal.hide();
-
-		let token = document.getElementById('input-token').value;
-		let params = new URLSearchParams(window.location.search);
-		params.set("token", token);
-		window.location.search = params.toString();
-
-		return token;
-	};
-
-	const modalElement = document.getElementById('token-prompt');
-	const modal = new bootstrap.Modal(modalElement, {
-		backdrop: 'static',
-		keyboard: false,
-		focus: true
-	});
-	modal.show();
-}
-
 /**
  * Return an access token for initializing the Dolby.io Communications
- * Web SDK. This method is looking for a token to be provided as a
- * querytring parameter or will prompt with a modal dialog for manual
- * entry.
+ * Web SDK. The function uses the fetchAuthConfig() function to fetch 
+ * CONSUMER_KEY and CONSUMER_SECRET from the auth_config.json, 
+ * and uses them to construct an authorization header.
  *
  * @param {*}
  * @returns token (string)
  *
- * This function will help provide a token that is given to the application
- * as a querystring parameter.
+ * This function will provide a token that required for authenticating
+ * with the Dolby.io API and enabling the SDK's features.
  */
-dolbyio.getAccessToken = () => {
-	// For an insecure but quick test, you can return a hard-coded
-	// access token during development.
-	// return '<REPLACE-WITH-TEMPORARY-ACCESS-TOKEN>';
+dolbyio.getAccessToken = async () => {
+  const configResponse = await fetchAuthConfig();
+  const config = await configResponse.json();
+  const CONSUMER_KEY = config.CONSUMER_KEY;
+  const CONSUMER_SECRET = config.CONSUMER_SECRET;
+  const authHeader =
+    "Basic " + btoa(encodeURI(CONSUMER_KEY) + ":" + encodeURI(CONSUMER_SECRET));
 
-	const queryParams = new URLSearchParams(window.location.search);
+  const tokenURL = "https://session.voxeet.com/v1/oauth2/token";
+  const tokenParams = {
+    method: "POST",
+    headers: {
+      Authorization: authHeader,
+      "Content-Type": "application/json", // add this line to specify the request's content type
+    },
+    body: JSON.stringify({
+      // stringify the object to convert it to a JSON string
+      grant_type: "client_credentials",
+    }),
+  };
 
-	console.group('Dolby.io Client Access Token');
-	const accessToken = queryParams.get('token');
+  const response = await fetch(tokenURL, tokenParams);
+  const jsonResponse = await response.json(); // resolve the response promise to access the JSON data
 
-	if (!accessToken) {
-		let inputToken = dolbyio.tokenPrompt();
-		console.log(inputToken);
-	}
-
-	try {
-		const token = accessToken.split('.')[1];
-		const jwt = JSON.parse(window.atob(token));
-		const expiration = new Date(jwt.exp * 1000);
-
-		console.log(`Token: ${accessToken}`);
-		console.log(`Expires: ${expiration}`);
-		if (expiration.getTime() <= new Date().getTime()) {
-			console.log("This token has expired.  Fetch a new one from the Dolby.io dashboard.");
-		}
-	} catch(error) {
-		console.error(error);
-	}
-	console.groupEnd();
-
-	return accessToken;
+  // Return the access_token to the application
+  return jsonResponse.access_token;
 };
-

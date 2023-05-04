@@ -14,10 +14,10 @@ const dolbyio = {};
 dolbyio.getAccessToken = async () => {
   const configResponse = await fetchAuthConfig();
   const config = await configResponse.json();
-  const CONSUMER_KEY = config.CONSUMER_KEY;
-  const CONSUMER_SECRET = config.CONSUMER_SECRET;
+  const APP_KEY = config.APP_KEY;
+  const APP_SECRET = config.APP_SECRET;
   const authHeader =
-    "Basic " + btoa(encodeURI(CONSUMER_KEY) + ":" + encodeURI(CONSUMER_SECRET));
+    "Basic " + btoa(encodeURI(APP_KEY) + ":" + encodeURI(APP_SECRET));
 
   const tokenURL = "https://session.voxeet.com/v1/oauth2/token";
   const tokenParams = {

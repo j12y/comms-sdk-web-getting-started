@@ -22,24 +22,23 @@
 
     <div class="container bg-dark text-white gx-4 px-4 py-4 mt-3 rounded">
         <img src="https://go.dolby.io/hubfs/raw_assets/public/Dolby_April2021/images/dolby-io-logo.svg" />
-        <h1>Getting Started with Video Calls</h1>
+        <h1>Getting Started with Auth0 User Authentication </h1>
     </div>
-
-    <h2>Auth0 Authentication Sample</h2>
-    <p>Welcome to our page!</p>
-    <!-- Style for Login/Logout buttons -->
-    <style>
-        .hidden {
-            display: none;
-        }
-
-        label {
-            margin-bottom: 10px;
-            display: block;
-        }
-    </style>
-    <button id="btn-login" disabled="true">Log in</button>
-    <button id="btn-logout" disabled="true">Log out</button>
+    <div>
+        <style>
+            .hidden {
+                display: none;
+            }
+    
+            label {
+                margin-bottom: 10px;
+                display: block;
+            }
+        </style>
+        <br>
+        <button id="btn-login" class="btn btn-dark" disabled="true">Log in</button>
+        <button id="btn-logout" class="btn btn-dark" disabled="true">Log out</button>
+    </div>
     <!-- Video Call Elements Hidden Until the Users Logs in -->
     <div class="hidden" id="gated-content">
         <p>

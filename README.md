@@ -21,7 +21,7 @@ The sample can be run locally, by cloning the repository to your machine and the
    <img src="./assets/auth0-creditential.png"  width="70%" height="50%">
 
 5. Configure Callback URLs:
-If you are following along with the sample project you downloaded from the top of this page, you should set the Allowed Callback URL to http://localhost:3000 if you don't want to specify a conference alias. It'll automatically set it to `web-sdk-starter`. If there's a conference alias you would like to give as a query parameter in the URL, add http://localhost:3000/?alias=* to the Callback URLs.
+If you are following along with the sample project you downloaded from the top of this page, you should set the Allowed Callback URL to http://localhost:3000 if you don't want to specify a conference alias. It'll automatically set it to `web-sdk-starter`. If there's a conference alias you would like to give as a query parameter in the URL, add http://localhost:3000/?alias=*  to the Callback URLs.
 
     <img src="./assets/app-urls.png"  width="70%" height="50%">
 
@@ -47,6 +47,10 @@ To get creditentials from Dolby.io, first create a free account. After you login
   "APP_SECRET" : "{DOLBY_IO_APP_SECRET}"
 }
 ```
+### Create Users
+To test the application go to Auth0 Dashboard, User Management and create new users. We will use these users' login information when we're running the app.
+
+ <img src="./assets/users.png"  width="70%" height="50%">
 
 ### Installation
 
@@ -69,6 +73,12 @@ This version of the application uses an [Express](https://expressjs.com) server 
 ```bash
 $ npm run dev
 ```
+### Demo 
+
+You should see your application running succesfully and only letting authenticated users to access the video call after following the previous steps. 
+
+<img src="./assets/demo.gif"  width="70%" height="50%">
+
 ## License
 
 This project is licensed under the MIT license. See the [LICENSE](LICENSE.txt) file for more info.

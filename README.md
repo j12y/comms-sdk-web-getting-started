@@ -16,9 +16,9 @@ The sample can be run locally, by cloning the repository to your machine and the
 
 <img src="./assets/create-application.png"  width="70%" height="50%">
 
-4. You will use the Domain  & Client ID information to fill the `auth_config.json` with the Dolby.io creditentials that you'll learn how to obtain in the next steps.
+4. You will use the Domain  & Client ID information to fill the `auth_config.json` with the Dolby.io credentials that you'll learn how to obtain in the next steps.
 
-   <img src="./assets/auth0-creditential.png"  width="70%" height="50%">
+   <img src="./assets/auth0-credentials.png"  width="70%" height="50%">
 
 5. Configure Callback URLs:
 If you are following along with the sample project you downloaded from the top of this page, you should set the Allowed Callback URL to http://localhost:3000 if you don't want to specify a conference alias. It'll automatically set it to `web-sdk-starter`. If there's a conference alias you would like to give as a query parameter in the URL, add http://localhost:3000/?alias=*  to the Callback URLs.

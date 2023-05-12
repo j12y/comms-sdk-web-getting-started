@@ -68,11 +68,19 @@ This will install all of the necessary packages in order for the sample to run.
 
 ### Running the Application
 
-This version of the application uses an [Express](https://expressjs.com) server that can serve the site from a single page. To start the app from the terminal, navigate to ./video-calls/final directory and run:
+This version of the application uses an [Express](https://expressjs.com) server that can serve the site from a single page. To start the app from the terminal, navigate to ./video-calls/final directory and use one of the run methods below:
+
+This will run the application using nodemon, watching for changes as we modify files.
 
 ```bash
 $ npm run dev
 ```
+This will run the application as normal using node.
+
+```bash
+$ npm start
+```
+
 ### Demo 
 
 You should see your application running succesfully and only letting authenticated users to access the video call after following the previous steps. 

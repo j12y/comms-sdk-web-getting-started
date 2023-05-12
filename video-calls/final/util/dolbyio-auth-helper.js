@@ -2,7 +2,7 @@ const dolbyio = {};
 /**
  * Return an access token for initializing the Dolby.io Communications
  * Web SDK. The function uses the fetchAuthConfig() function to fetch 
- * CONSUMER_KEY and CONSUMER_SECRET from the auth_config.json, 
+ * APP_KEY and APP_SECRET from the auth_config.json, 
  * and uses them to construct an authorization header.
  *
  * @param {*}

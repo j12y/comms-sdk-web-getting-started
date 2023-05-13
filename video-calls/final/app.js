@@ -46,7 +46,6 @@ const updateUI = async (initializeToken,openSession) => {
         const name = JSON.parse(userInfo).nickname;
         // Start a new session with logged user's name and connect to the Dolby.io platform establishing a client-server link
         await openSession(name);
-        // localStorage.setItem("name", name);
         
     } else {
         document.getElementById("gated-content").classList.add("hidden");

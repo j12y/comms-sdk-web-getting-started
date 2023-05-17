@@ -34,7 +34,7 @@ const updateUI = async (initializeToken,openSession) => {
     document.getElementById("btn-login").disabled = isAuthenticated;
     /**
      *  Logic to show/hide gated content after authentication
-        Only initilize and start the conference if the user is authenticated
+        Only initialize and start the conference if the user is authenticated
      */
 
     if (isAuthenticated) {

@@ -13,71 +13,76 @@
 
         <!-- Dolby.io Web SDK -->
         <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@voxeet/voxeet-web-sdk/dist/voxeet-sdk.js"></script>
-        <script type="text/javascript" src="https://developer.dolby.io/demos/comms-sdk-web-getting-started/util/dolbyio-auth-helper.js"></script>
+        <script type="text/javascript" src="../util/dolbyio-auth-helper.js"></script>
+        <!-- Auth0 Single Page Application SDK -->
+        <script src="https://cdn.auth0.com/js/auth0-spa-js/1.2/auth0-spa-js.production.js"></script>
+        <script src="./app.js"></script>
     </head>
 <body>
 
     <div class="container bg-dark text-white gx-4 px-4 py-4 mt-3 rounded">
-        <img src="https://go.dolby.io/hubfs/raw_assets/public/Dolby_April2021/images/dolby-io-logo.svg"/>
-        <h1>Getting Started with Video Calls</h1>
+        <img src="https://go.dolby.io/hubfs/raw_assets/public/Dolby_April2021/images/dolby-io-logo.svg" />
+        <h1>Getting Started with Auth0 User Authentication </h1>
     </div>
+    <div>
+        <style>
+            .hidden {
+                display: none;
+            }
+    
+            label {
+                margin-bottom: 10px;
+                display: block;
+            }
+        </style>
+        <br>
+        <button id="btn-login" class="btn btn-dark" disabled="true">Log in</button>
+        <button id="btn-logout" class="btn btn-dark" disabled="true">Log out</button>
+    </div>
+    <!-- Video Call Elements Hidden Until the Users Logs in -->
+    <div class="hidden" id="gated-content">
+        <p>
+            You're seeing this content because you're currently
+            <strong>logged in</strong>.
+        </p>
 
-    <div class="container px-4 mt-4">
-        <div class="row justify-content-around mt-3">
-            <div class="col-4 shadow p-3 mb-5 bg-body rounded">
-                <h2>Self-View</h2>
-                <style>
-                    #self-view video {                        /* Flip the display of the local user in self view */
+        <div class="container px-4 mt-4">
+            <div class="row justify-content-around mt-3">
+                <div class="col-4 shadow p-3 mb-5 bg-body rounded">
+                    <h2>Self-View</h2>
+                    <style>
+                        #self-view video {                    /* Flip the display of the local user in self view */
                         -webkit-transform: rotateY(180deg);   /* Safari, Chrome */
                         -moz-transform: rotateY(180deg);      /* Firefox */
                         transform: rotateY(180deg);           /* Microsoft, etc. */
-                    }
-                </style>
-                <div id="self-view"> <!-- Container for the local participant media stream -->
-                    <p id="self-view-username"></p>
-                    <i class="display-1 bi bi-person-video position-relative"></i>
+                        }
+                    </style>
+                    <div id="self-view"> <!-- Container for the local participant media stream -->
+                        <p id="self-view-username"></p>
+                        <i class="display-1 bi bi-person-video position-relative"></i>
+                    </div>
+
+                    <button type="button" class="btn btn-dark" id="btn-join">Join</button>
+                    <button type="button" class="btn btn-dark" id="btn-leave">Leave</button>
                 </div>
 
-                <button type="button" class="btn btn-dark" id="btn-join">Join</button>
-                <button type="button" class="btn btn-dark" id="btn-leave">Leave</button>
-            </div>
-            
-            <div class="col-4 shadow p-3 mb-5 bg-body rounded">
-                <h2>Remote-View</h2>
-                <div id="remote-view"> <!-- Container for the remote participant media stream -->
-                    <p id="remote-view-username"></p>
-                    <i class="display-1 bi bi-person-video position-relative"></i>
+                <div class="col-4 shadow p-3 mb-5 bg-body rounded">
+                    <h2>Remote-View</h2>
+                    <div id="remote-view"> <!-- Container for the remote participant media stream -->
+                        <p id="remote-view-username"></p>
+                        <i class="display-1 bi bi-person-video position-relative"></i>
+                    </div>
+
+                    <button type="button" class="btn btn-dark" id="btn-invite"><i class="bi bi-clipboard2-plus-fill"></i> Invite</button>
                 </div>
-
-                <button type="button" class="btn btn-dark" id="btn-invite"><i class="bi bi-clipboard2-plus-fill"></i> Invite</button>
             </div>
         </div>
-    </div>
 
-    <div class="container px-4 py-4 mt-3">
-        <p id="message"></p>
-        <p><a href="https://docs.dolby.io/communications-apis/docs/getting-started-with-the-javascript-sdk">Explore More Tutorials</a></p>
-    </div>
-
-    <!-- Prompt user for token and alias if not provided in URL -->
-    <div class="modal fade" id="token-prompt" tabindex="-1" aria-labelledby="token-prompt-label" aria-hidden="true">
-        <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title" id="token-prompt-label">Dolby.io Dashboard</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <label for="input-token" class="form-label">Demo Client Access Token:</label>
-                <input id="input-token" type="text" class="form-control">
-            </div>
-            <div class="modal-footer">
-            <button type="button" id="btn-token" class="btn btn-primary">Authenticate</button>
-            </div>
-        </div>
+        <div class="container px-4 py-4 mt-3">
+            <p id="message"></p>
+            <p><a href="https://docs.dolby.io/communications-apis/docs/getting-started-with-the-javascript-sdk">Explore More Tutorials</a></p>
         </div>
     </div>
-
     <!-- Bootstrap Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
@@ -89,11 +94,11 @@
 
         /** 
          * Start by initializing the Web SDK with an access token.  This starter project
-         * utilizes a helper function to pull the token from the query parameters in the URL.
+         * utilizes a helper function to provide the token with an API call.
          */
-        const initializeToken = () => {
+        const initializeToken = async () => {
             console.group("Step 1: Initialize the SDK");
-            const token = dolbyio.getAccessToken();
+            const token = await dolbyio.getAccessToken();
             VoxeetSDK.initializeToken(token, () => { console.log("Get a New Access Token"); });
             shareMessage("Step 1: Web SDK initialized.");
             console.groupEnd();
@@ -245,20 +250,29 @@
         }
 
         const main = async () => {
-            // Configure the application from query parameter values
+             // When the web page has finished loading, configure Auth0 client, check the user's login state, and update the UI accordingly.
+            window.onload = async () => {
+                await configureClient();
+                await processLoginState();
+                // Function below will use initializeToken and openSession functions as callbacks in it after authentication.
+                await updateUI(initializeToken, openSession);
+
+            };
+            // When user clicks the Log in button, redirect user to Auth0 to access the conference only after authentication
+            document.getElementById("btn-login").onclick = async () => {
+                await login();
+            };
+            // When user clicks the Log out button, log out and clean Auth0 browser cookies
+            document.getElementById("btn-logout").onclick = async () => {
+            await logout();
+            };
+            // Configure the conference alias from query parameter values
             const queryParams = new URLSearchParams(window.location.search);
-            const name = queryParams.get("name") || "developer";
             const alias = queryParams.get("alias") || "web-sdk-starter";
-
-            // Establish Real-time Communications by first initializing the Dolby.io Web SDK with credentials
-            const token = await initializeToken();
-
-            // Start a new session and connect to the Dolby.io platform establishing a client-server link
-            await openSession(name);
 
             // When user clicks the Join button, start and join a conference for the given alias
             document.getElementById("btn-join").onclick = async () => {
-                await createAndJoinConference(alias, name);
+                await createAndJoinConference(alias);
             };
 
             // Define custom behavior for activity that occurs during a video call
@@ -267,7 +281,7 @@
             // When user clicks the Invite button, generate a url to join the same conference
             document.getElementById("btn-invite").onclick = () => {
                 console.group("Step 5: Invite a remote participant")
-                let url = `https://developer.dolby.io/demos/comms-sdk-web-getting-started/index.html?token=${token}&alias=${alias}&name=guest`;
+                let url = `http://localhost:3000/?alias=${alias}`;
                 console.log(`Invite a guest with URL: ${url}`);
                 shareMessage(`Share the URL copied to your browser clipboard: ${url}`);
                 navigator.clipboard.writeText(url);
